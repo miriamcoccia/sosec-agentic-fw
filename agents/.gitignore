@@ -1,0 +1,26 @@
+# Ignore data
+data/
+notebooks/*.ipynb_checkpoints/
+# Ignore logs
+logs/
+*.log
+
+# Ignore virtual environments
+.venv/
+venv/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore notebook checkpoints
+*.ipynb_checkpoints
+*/agents/*.ipynb_checkpoints/*
+
+# Optional: Ignore analysis outputs
+isr_oct_analysis/*/*.csv
+isr_oct_analysis/*/*.json
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]

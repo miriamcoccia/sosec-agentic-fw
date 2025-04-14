@@ -4,11 +4,11 @@ This repository contains code to automate the classification and event-matching 
 
 ## Overview
 
-The SOSEC Agentic Framework is designed to automate the classification and event-matching of Telegram posts. It leverages a modular, agent-based architecture to process data from sources like Telegram and the CeMAS API, classify content into thematic categories, extract and validate keywords, enrich them with external data (e.g., Google Trends), and match them with relevant events. The final output is visualized for analysis and decision-making.
+The SOSEC Agentic Framework is designed to automate the classification and event-matching of Telegram posts. It leverages a modular, agent-based architecture to process data from sources like Telegram and the CeMAS API, classify content into thematic categories, extract and validate keywords, enrich them with external data (e.g., Google Trends), and match them with relevant events. The final output is visualized for analysis and decision-making.
 
 ## Architecture
 
-The system is composed of interconnected agents, each responsible for a specific task in the data processing pipeline. The flowchart below illustrates the architecture:
+The system is composed of interconnected agents, each responsible for a specific task in the data processing pipeline. The flowchart below illustrates the architecture:
 
 ```mermaid
 flowchart TD
@@ -50,13 +50,13 @@ flowchart TD
 
 ## Getting Started
 
-To set up and run the SOSEC Agentic Framework locally, follow these steps:
+To set up and run the SOSEC Agentic Framework locally, follow these steps:
 
 ### Prerequisites
 
 - Python 3.8 or higher
-- [Poetry](https://python-poetry.org/docs/) for dependency management
-- Access to required APIs (e.g., Telegram, CeMAS, Google Trends)
+- [Poetry](https://python-poetry.org/docs/) for dependency management
+- Access to required APIs (e.g., Telegram, CeMAS, Google Trends)
 
 ### Installation
 
@@ -106,7 +106,7 @@ sosec-agentic-fw/
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request with your changes. Ensure that your code adheres to the existing style and includes appropriate tests.
+Contributions are welcome! Please fork the repository and submit a pull request with your changes. Ensure that your code adheres to the existing style and includes appropriate tests.
 
 ## License
 

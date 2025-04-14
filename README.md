@@ -1,6 +1,6 @@
 # SOSEC Agentic Framework
 
-This repository contains code to automate the classification and event-matching of Telegram posts.
+This repository contains code to automate the classification and event-matching of Telegram posts.
 
 ## Overview
 

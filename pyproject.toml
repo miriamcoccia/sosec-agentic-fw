@@ -1,0 +1,23 @@
+[project]
+name = "sosec-agentic-fw"
+version = "0.1.0"
+description = "Automated agentic framework for event matching"
+authors = [
+    {name = "Miriam Coccia"}
+]
+license = {text = "Apache 2.0"}
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "pandas (>=2.2.3,<3.0.0)",
+    "ollama (>=0.4.7,<0.5.0)",
+    "pydantic (>=2.11.3,<3.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "pytrends (>=4.9.2,<5.0.0)",
+    "eventregistry (>=9.1,<10.0)"
+]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

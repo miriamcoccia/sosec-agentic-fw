@@ -157,6 +157,4 @@ class TopicCheckerAgent:
         data_origin.to_csv(outpath, index=False)
         print("Data saved successfully")
 
-# Example usage
-# agent = TopicCheckerAgent(keywords=["example", "keywords"], topic="Example Topic")
-# agent.process_dataset("input.csv", "output.csv", "checkpoint.csv")
+

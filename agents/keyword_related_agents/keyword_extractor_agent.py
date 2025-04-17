@@ -62,7 +62,7 @@ class KeywordExtractorAgent:
             )}
         ]
 
-    def extract_keywords(self, category, texts):
+    def extract_keywords(self, category, texts, texts_others):
         """
         Uses Llama to extract the most relevant keywords for a given category.
 

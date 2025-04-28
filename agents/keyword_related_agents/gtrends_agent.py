@@ -10,8 +10,15 @@ from pydantic import BaseModel, field_validator
 
 class GTrendsOutput(BaseModel):
     """
-    Pydantic model to validate and structure the output from GTrendsAgent.
+    Data model for structuring the output from GTrendsAgent.
+
+    Attributes:
+        original_keywords (List[str]): List of original keywords provided as input.
+        suggested_keywords (List[str]): List of suggested keywords obtained from Google Trends.
+        related_keywords (List[str]): List of related keywords obtained from related queries.
+        all_keywords (List[str]): Consolidated and cleaned list of all collected keywords.
     """
+
     original_keywords: List[str]
     suggested_keywords: List[str]
     related_keywords: List[str]
@@ -20,6 +27,15 @@ class GTrendsOutput(BaseModel):
     @field_validator("original_keywords", "suggested_keywords", "related_keywords", "all_keywords", mode="before")
     @classmethod
     def validate_keywords(cls, v):
+        """
+        Validator to ensure each field is a list of strings.
+
+        Args:
+            v: The value to validate.
+
+        Raises:
+            ValueError: If the value is not a list of strings.
+        """
         if not isinstance(v, list) or not all(isinstance(kw, str) for kw in v):
             raise ValueError("Each keyword list must be a list of strings.")
         return v
@@ -27,14 +43,22 @@ class GTrendsOutput(BaseModel):
 
 class GTrendsAgent:
     """
-    An agent that interacts with the Google Trends API to retrieve suggested and related search keywords 
-    based on a set of original keywords.
+    Agent class to interact with Google Trends and collect suggested and related keywords.
+
+    Methods:
+        clean_keyword(kw): Checks if a keyword is valid based on length and printability.
+        get_suggestions(use_mid): Fetches keyword suggestions based on original keywords.
+        get_related_keywords(): Fetches related queries for all known keywords.
+        get_all_keywords(): Aggregates and deduplicates all collected keywords.
+        run(): Executes the full keyword retrieval pipeline and returns validated output.
     """
 
     def __init__(self, original_keywords: Optional[List[str]] = None):
         """
-        Initialize the agent with an optional list of original keywords.
-        Uses German language and region context.
+        Initialize GTrendsAgent with optional original keywords.
+
+        Args:
+            original_keywords (Optional[List[str]]): List of keywords to initialize with.
         """
         self.pytrend = TrendReq(
             hl='de-DE',
@@ -59,10 +83,29 @@ class GTrendsAgent:
         self.total_keywords = []
 
     def clean_keyword(self, kw: str) -> bool:
+        """
+        Validate that a keyword is a printable string with reasonable length.
+
+        Args:
+            kw (str): Keyword to validate.
+
+        Returns:
+            bool: True if keyword is valid, False otherwise.
+        """
         return isinstance(kw, str) and 1 < len(kw) < 50 and kw.isprintable()
 
     def get_suggestions(self, use_mid: bool = False) -> List[str]:
+        """
+        Retrieve keyword suggestions from Google Trends.
+
+        Args:
+            use_mid (bool): Whether to use Google's 'mid' identifier instead of titles.
+
+        Returns:
+            List[str]: List of unique, cleaned suggested keywords.
+        """
         all_suggestions = []
+
         for keyword in self.original_keywords:
             try:
                 suggestions = self.pytrend.suggestions(keyword=keyword)
@@ -71,11 +114,18 @@ class GTrendsAgent:
                     all_suggestions.extend(filter(self.clean_keyword, entries))
             except Exception as e:
                 logging.warning(f"⚠️ Failed to get suggestions for '{keyword}': {e}")
-            time.sleep(random.uniform(10, 15))  # Longer delay to avoid CAPTCHA
+            time.sleep(random.uniform(10, 15))  # Random delay to reduce risk of being rate-limited
+
         self.sugg_keywords = list(set(all_suggestions))
         return self.sugg_keywords
 
     def get_related_keywords(self) -> List[str]:
+        """
+        Retrieve related queries based on original and suggested keywords.
+
+        Returns:
+            List[str]: List of unique, cleaned related keywords.
+        """
         known_keywords = set(filter(self.clean_keyword, self.original_keywords + self.sugg_keywords))
         related_kws = []
 
@@ -87,7 +137,8 @@ class GTrendsAgent:
             except Exception as e:
                 logging.warning(f"⚠️ Failed to get related queries for '{kw}': {e}")
                 continue
-            time.sleep(random.uniform(10, 15))
+
+            time.sleep(random.uniform(10, 15))  # Respectful sleep to avoid banning
 
             for kind in ['top', 'rising']:
                 df = result.get(kind)
@@ -101,12 +152,24 @@ class GTrendsAgent:
         return self.related_keywords
 
     def get_all_keywords(self) -> List[str]:
+        """
+        Consolidate and deduplicate all keywords collected.
+
+        Returns:
+            List[str]: List of all validated keywords.
+        """
         self.total_keywords = list(set(
             filter(self.clean_keyword,
                    self.original_keywords + self.sugg_keywords + self.related_keywords)))
         return self.total_keywords
 
     def run(self) -> GTrendsOutput:
+        """
+        Execute the full keyword gathering process.
+
+        Returns:
+            GTrendsOutput: Structured output containing all keyword lists.
+        """
         logging.info("🤖 Running GTrendsAgent...")
         self.get_suggestions()
         logging.info(f"👀 Suggested Keywords: {self.sugg_keywords}")
@@ -114,6 +177,7 @@ class GTrendsAgent:
         logging.info(f"🪼 Related Keywords: {self.related_keywords}")
         all_keywords = self.get_all_keywords()
         logging.info(f"🔑 All Keywords: {all_keywords}")
+
         return GTrendsOutput(
             original_keywords=self.original_keywords,
             suggested_keywords=self.sugg_keywords,
@@ -123,9 +187,11 @@ class GTrendsAgent:
 
 
 if __name__ == "__main__":
+    # Configure logging settings
     logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(message)s')
 
-    test_keywords = ['Erdbeeren']  # Use new keywords while recovering from 429 bans
+    # Example usage
+    test_keywords = ['Erdbeeren']  # Change keywords to avoid temporary bans (429 errors)
     agent = GTrendsAgent(original_keywords=test_keywords)
 
     try:
